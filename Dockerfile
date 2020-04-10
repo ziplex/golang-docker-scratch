@@ -2,7 +2,10 @@ FROM golang:alpine as golang
 WORKDIR /go/src/app
 COPY . .
 # Static build required so that we can safely copy the binary over.
-RUN CGO_ENABLED=0 go-wrapper install -ldflags '-extldflags "-static"'
+#RUN CGO_ENABLED=0 go-wrapper install -ldflags '-extldflags "-static"'
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+      -ldflags='-w -s -extldflags "-static"' -a \
+      -o /go/bin/app .
 
 FROM alpine:latest as alpine
 RUN apk --no-cache add tzdata zip ca-certificates
